@@ -9,7 +9,7 @@
 ##' hello2("and goodbye")
 ##' @export
 
-condlogitbayes2 <- function(Y,X,priorb,priorB,prior="yes",Nmethod=2){
+condlogitbayes2 <- function(Y,X,priorb,priorB,prior="yes",gradparam=.01,maxiter=1000){
   sigmoid <- function(x){
     1/(1+exp(-x))
   }
@@ -21,14 +21,10 @@ condlogitbayes2 <- function(Y,X,priorb,priorB,prior="yes",Nmethod=2){
   b=matrix(rep(priorb,J),nrow=J)
   Binv=solve(priorB)
   
-  #set gradient parameter
-  gradparam=0.01
-  
   #initialize
   beta=matrix(rep(1,(H+1)*J),nrow=J,byrow=TRUE)
   
-  maxsim=1000  
-  for(sim in 1:maxsim){
+  for(sim in 1:maxiter){
     #Compute Gradient
     lambda=sigmoid(Xmat%*%t(beta))
     probmis=apply(1-lambda,1,prod)
@@ -52,14 +48,10 @@ condlogitbayes2 <- function(Y,X,priorb,priorB,prior="yes",Nmethod=2){
     }
     beta=betanew
   }
-  if(Nmethod==1){
-    prob=mean((1-apply(1-sigmoid(Xmat %*% t(beta)),1,prod)))
-    n0=floor((M-1)*(1-prob)/(prob))
-    N=M+n0
-  }else if(Nmethod==2){
-    prob=(1-apply(1-sigmoid(Xmat %*% t(beta)),1,prod))
-    N=sum(1/prob)
-  }
+
+  prob=(1-apply(1-sigmoid(Xmat %*% t(beta)),1,prod))
+  N=sum(1/prob)
+
   
   mylist <- list("beta"=beta,"N"=N)
   return(mylist)

@@ -11,55 +11,50 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// rcpparma_hello_world
-arma::mat rcpparma_hello_world();
-RcppExport SEXP _BLRCR_rcpparma_hello_world() {
+// SPBLRCRsolver
+Rcpp::List SPBLRCRsolver(arma::mat y, arma::mat x, arma::vec priorb, arma::mat priorB, arma::vec priorMU0, arma::mat priorlambda0, double priorkappa0, double priornu0, double aalpha, double balpha, int Kstar, int samples);
+RcppExport SEXP _BLRCR_SPBLRCRsolver(SEXP ySEXP, SEXP xSEXP, SEXP priorbSEXP, SEXP priorBSEXP, SEXP priorMU0SEXP, SEXP priorlambda0SEXP, SEXP priorkappa0SEXP, SEXP priornu0SEXP, SEXP aalphaSEXP, SEXP balphaSEXP, SEXP KstarSEXP, SEXP samplesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rcpparma_hello_world());
+    Rcpp::traits::input_parameter< arma::mat >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type priorb(priorbSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type priorB(priorBSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type priorMU0(priorMU0SEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type priorlambda0(priorlambda0SEXP);
+    Rcpp::traits::input_parameter< double >::type priorkappa0(priorkappa0SEXP);
+    Rcpp::traits::input_parameter< double >::type priornu0(priornu0SEXP);
+    Rcpp::traits::input_parameter< double >::type aalpha(aalphaSEXP);
+    Rcpp::traits::input_parameter< double >::type balpha(balphaSEXP);
+    Rcpp::traits::input_parameter< int >::type Kstar(KstarSEXP);
+    Rcpp::traits::input_parameter< int >::type samples(samplesSEXP);
+    rcpp_result_gen = Rcpp::wrap(SPBLRCRsolver(y, x, priorb, priorB, priorMU0, priorlambda0, priorkappa0, priornu0, aalpha, balpha, Kstar, samples));
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpparma_outerproduct
-arma::mat rcpparma_outerproduct(const arma::colvec& x);
-RcppExport SEXP _BLRCR_rcpparma_outerproduct(SEXP xSEXP) {
+// condBLRCRsolver
+Rcpp::List condBLRCRsolver(arma::mat y, arma::mat x, arma::vec priorb, arma::mat priorB, double gradparam, int prior, double tol, int maxiter);
+RcppExport SEXP _BLRCR_condBLRCRsolver(SEXP ySEXP, SEXP xSEXP, SEXP priorbSEXP, SEXP priorBSEXP, SEXP gradparamSEXP, SEXP priorSEXP, SEXP tolSEXP, SEXP maxiterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpparma_outerproduct(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rcpparma_innerproduct
-double rcpparma_innerproduct(const arma::colvec& x);
-RcppExport SEXP _BLRCR_rcpparma_innerproduct(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpparma_innerproduct(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rcpparma_bothproducts
-Rcpp::List rcpparma_bothproducts(const arma::colvec& x);
-RcppExport SEXP _BLRCR_rcpparma_bothproducts(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpparma_bothproducts(x));
+    Rcpp::traits::input_parameter< arma::mat >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type priorb(priorbSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type priorB(priorBSEXP);
+    Rcpp::traits::input_parameter< double >::type gradparam(gradparamSEXP);
+    Rcpp::traits::input_parameter< int >::type prior(priorSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
+    rcpp_result_gen = Rcpp::wrap(condBLRCRsolver(y, x, priorb, priorB, gradparam, prior, tol, maxiter));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BLRCR_rcpparma_hello_world", (DL_FUNC) &_BLRCR_rcpparma_hello_world, 0},
-    {"_BLRCR_rcpparma_outerproduct", (DL_FUNC) &_BLRCR_rcpparma_outerproduct, 1},
-    {"_BLRCR_rcpparma_innerproduct", (DL_FUNC) &_BLRCR_rcpparma_innerproduct, 1},
-    {"_BLRCR_rcpparma_bothproducts", (DL_FUNC) &_BLRCR_rcpparma_bothproducts, 1},
+    {"_BLRCR_SPBLRCRsolver", (DL_FUNC) &_BLRCR_SPBLRCRsolver, 12},
+    {"_BLRCR_condBLRCRsolver", (DL_FUNC) &_BLRCR_condBLRCRsolver, 8},
     {NULL, NULL, 0}
 };
 
