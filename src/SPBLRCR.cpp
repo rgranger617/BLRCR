@@ -1,6 +1,5 @@
 // -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 
-// we only include RcppArmadillo.h which pulls Rcpp.h in for us
 #include "RcppArmadillo.h"
 
 // via the depends attribute we tell Rcpp to create hooks for
@@ -79,9 +78,28 @@ Rcpp::List SPBLRCRsolver(arma::mat y, arma::mat x,
   arma::mat Bb = Binv*priorb;
   arma::mat priorlambda0inv = inv_sympd(priorlambda0);
   
+  //Add column of 1s for intercept
+  arma::mat allOne(n, 1, arma::fill::ones);
+  x.insert_cols(0, allOne);
+  
+  //Initializations
+  arma::mat beta(J,H+1);
+  beta.fill(1.0);  //initialize beta to all 1s
+  int n0 = 0;
+  int N = n+n0;
+  arma::mat xobs=x;
+  arma::mat yobs=y;
+  
+  arma::vec zinit=arma::normalise(sort(arma::cumsum(arma::regspace<arma::vec>(1,Kstar)),"descend"),1);
+  arma::uvec Zlab(N);
+  
+  
+  
+  
+  //Return Variables
   return Rcpp::List::create(Rcpp::Named("n") = n,
-                            Rcpp::Named("priorlambda0inv") = priorlambda0inv,
-                            Rcpp::Named("Bb") = Bb);
+                            Rcpp::Named("zinit") = zinit,
+                            Rcpp::Named("Zlab") = Zlab);
 }
 
 
