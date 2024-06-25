@@ -2,21 +2,37 @@
 % Please edit documentation in R/datasimulators.R
 \name{datasimulator}
 \alias{datasimulator}
-\title{A placeholder function using roxygen}
+\title{Capture-Recapture Data Simulator}
 \usage{
 datasimulator(N, beta, covdists, missing = "yes")
 }
 \arguments{
-\item{txt}{An optional character variable, defaults to \sQuote{world}}
+\item{N}{the true population size.}
+
+\item{beta}{a matrix of beta coefficients.}
+
+\item{covdists}{a list of covariate distributions and their parameters,
+options include normal, gamma, chisq, and tdist.}
+
+\item{missing}{logical. if FALSE, then all individuals will be returned, even those with
+capture histories of all 0.}
 }
 \value{
-Nothing is returned but as a side effect output is printed
+df of capture histories and covariates.
 }
 \description{
-This function shows a standard text on the console. In a time-honoured
-tradition, it defaults to displaying \emph{hello, world}.
+This function generates a capture-recapture dataset.
 }
 \examples{
-hello2()
-hello2("and goodbye")
+N = 500
+mybeta = matrix(c(-1,-1,-1,
+                  -1,-1,-2,
+                  -1,0,1,
+                  -1,-1,1),nrow=4,byrow=TRUE)
+mycovariates = list(c("gamma",1,1),
+                    c("gamma",1,1))
+                  
+CRsimdata=datasimulator(N,mybeta,mycovariates)
+CRsimdata
+
 }

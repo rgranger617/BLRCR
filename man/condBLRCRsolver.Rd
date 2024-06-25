@@ -10,8 +10,10 @@ condBLRCRsolver(
   priorb,
   priorB,
   gradparam = 0.01,
+  prior = 1L,
   tol = 1e-06,
-  maxiter = 1000L
+  maxiter = 1000L,
+  initbeta = NULL
 )
 }
 \arguments{
@@ -51,14 +53,14 @@ mynormsigma=matrix(c(.5,.45,.45,.5,
                       1,0,0,1,
                       .5,-.35,-.35,.5),nrow=3,byrow=TRUE)
 
-mydata = multdatasimulator(2000,mybeta,mynormprobs,mynormmeans,mynormsigma,
-                           missing="yes")
+myCRdata = multdatasimulator(2000,mybeta,mynormprobs,mynormmeans,mynormsigma,
+                             missing=TRUE)
                            
 #Run the Algorithm
 mypriorb=rep(0,3) #prior on intercept and both beta means set to 0
 mypriorB=diag(3) #identity matrix, size 3     
 
-condBLRCRsolver(as.matrix(mydata[,1:4]),
-                as.matrix(mydata[,5:6]),mypriorb,mypriorB)                      
+condBLRCRsolver(as.matrix(myCRdata[,1:4]),
+                as.matrix(myCRdata[,5:6]),mypriorb,mypriorB)                      
 
 }

@@ -43,95 +43,137 @@
 //'                       1,0,0,1,
 //'                       .5,-.35,-.35,.5),nrow=3,byrow=TRUE)
 //' 
-//' mydata = multdatasimulator(2000,mybeta,mynormprobs,mynormmeans,mynormsigma,
-//'                            missing="yes")
+//' myCRdata = multdatasimulator(2000,mybeta,mynormprobs,mynormmeans,mynormsigma,
+//'                              missing=TRUE)
 //'                            
 //' #Run the Algorithm
 //' mypriorb=rep(0,3) #prior on intercept and both beta means set to 0
 //' mypriorB=diag(3) #identity matrix, size 3     
 //' 
-//' condBLRCRsolver(as.matrix(mydata[,1:4]),
-//'                 as.matrix(mydata[,5:6]),mypriorb,mypriorB)                      
+//' condBLRCRsolver(as.matrix(myCRdata[,1:4]),
+//'                 as.matrix(myCRdata[,5:6]),mypriorb,mypriorB)                      
 //' 
 //' @export 
 // [[Rcpp::export]]
 Rcpp::List condBLRCRsolver(arma::mat y, arma::mat x, 
-                           arma::vec priorb, arma::mat priorB,
-                           double gradparam=0.01, int prior=1,
-                           double tol=1e-6,int maxiter=1000){
-  //Compute Parameters of the data
-  int M = y.n_rows;
-  int J = y.n_cols;
-  int H = x.n_cols;
+                          arma::vec priorb, arma::mat priorB,
+                          double gradparam=0.01, int prior=1,
+                          double tol=1e-6,int maxiter=1000,
+                          Rcpp::Nullable<Rcpp::NumericMatrix> initbeta = R_NilValue){
   
-  //Add a column of 1s to X
-  arma::mat allOne(M, 1, arma::fill::ones);
-  x.insert_cols(0, allOne);
-  
-  //Compute a few necessary matrices
-  arma::mat gradparammat(J,H+1);
-  gradparammat.fill(gradparam);
-  arma::mat B = priorB;
-  arma::mat b = priorb;
-  arma::mat Binv = inv(B);
-  
-  //Initialize beta
-  arma::mat beta(J,H+1);
-  beta.fill(1.0);
-  
-  //Perform Gradient Ascent
-  int converge = 0;
-  for(int iter=0; iter<maxiter; iter++){
-    
-    //Compute lambda
-    arma::mat lambda = 1.0/(1.0+exp(-x*beta.t()));
-    
-    //Compute Probability of missing
-    arma::mat probmis(M,1,arma::fill::none);
-    for(int i=0; i<M; i++){
-      probmis(i) = prod(1.0-lambda.row(i));
-    }
-    
-    //Compute Likelihood Part
-    arma::mat probmismat = probmis / (1.0-probmis); //elementwise mult
-    arma::mat likpart = (x.t()*(lambda-y)+x.t()*(lambda.each_col() % probmismat)).t();
-    
-    //Compute Prior Part
-    arma::mat priorpart(J,H+1,arma::fill::none);
-    for(int j=0; j<J; j++){
-      priorpart.row(j)=(beta.row(j)-b.t())*Binv.t();
-    }
-    
-    //Compute gradient
-    arma::mat gradient = likpart;
-    if(prior==1){
-      gradient = likpart+priorpart;
-    }
-    arma::mat betanew = beta - gradient % gradparammat;
-    
-    //Check Convergence
-    //Rcpp::Rcout << "The value is " << sqrt(accu(pow(betanew-beta,2))) << std::endl;
-    if(sqrt(accu(pow(betanew-beta,2)))<tol){
-      converge = 1;
-      break;
-    }
-    
-    //Update Beta
-    beta = betanew;
-  }
-  
-  //Compute N
-  arma::mat lambda = 1.0/(1.0+exp(-x*beta.t()));
-  arma::mat probmis(M,1,arma::fill::randu);
-  for(int i=0; i<M; i++){
-    probmis(i) = prod(1.0-lambda.row(i));
-  }
-  double N = accu(1.0/(1-probmis));
+ //Compute Parameters of the data
+ int M = y.n_rows;
+ int J = y.n_cols;
+ int H = x.n_cols;
+ 
+ //////////////////
+ //SAFETY CHECKS///
+ //////////////////
+ if(priorb.n_elem != x.n_cols+1){
+   Rcpp::Rcout << "Error: priorb should have the same length as the number of covariates + 1." << std::endl;
+   return(0);
+ }
+ 
+ //Save the specified gradient parameter
+ double gradparamoriginal = gradparam;
+ 
+ //Add a column of 1s to X
+ arma::mat allOne(M, 1, arma::fill::ones);
+ x.insert_cols(0, allOne);
+ 
+ //Compute a few necessary matrices
+ arma::mat gradparammat(J,H+1);
+ gradparammat.fill(gradparam);
+ arma::mat B = priorB;
+ arma::mat b = priorb;
+ arma::mat Binv = inv(B);
+ 
+ //Initialize beta
+ arma::mat beta(J,H+1);
+ 
+ if(initbeta.isNotNull()){
+   Rcpp::NumericMatrix initbeta_(initbeta);
+   beta = Rcpp::as<arma::mat>(wrap(initbeta_));
+ }else{
+   beta.fill(0.0);
+ }
 
-
-  return Rcpp::List::create(Rcpp::Named("N") = N,
-                            Rcpp::Named("betas") = beta,
-                            Rcpp::Named("converge") = converge);
+ //Track the divergence criterion
+ double divergecritold=10; //this puts a limit on the initial divergence from beta.
+ 
+ //Perform Gradient Ascent
+ int converge = 0;
+ for(int iter=0; iter<maxiter; iter++){
+   
+   //Compute lambda
+   arma::mat lambda = 1.0/(1.0+exp(-x*beta.t()));
+   
+   //Compute Probability of missing
+   arma::mat probmis(M,1,arma::fill::none);
+   for(int i=0; i<M; i++){
+     probmis(i) = prod(1.0-lambda.row(i));
+   }
+   
+   
+   //Compute Likelihood Part
+   arma::mat probmismat = probmis / (1.0-probmis); //elementwise mult
+   arma::mat likpart = (x.t()*(lambda-y)+x.t()*(lambda.each_col() % probmismat)).t();
+   
+   //Compute Prior Part
+   arma::mat priorpart(J,H+1,arma::fill::none);
+   for(int j=0; j<J; j++){
+     priorpart.row(j)=(beta.row(j)-b.t())*Binv.t();
+   }
+   
+   //Compute gradient
+   arma::mat gradient = likpart;
+   if(prior==1){
+     gradient = likpart+priorpart;
+   }
+   arma::mat betanew = beta - gradient % gradparammat;
+   
+   //Check Convergence
+   double divergecrit = sqrt(accu(pow(betanew-beta,2)));
+   //Rcpp::Rcout << "Iteration: " << iter << std::endl;
+   //Rcpp::Rcout << "The divergecritold is " << divergecritold << std::endl;
+   //Rcpp::Rcout << "The divergecrit is " << divergecrit << std::endl;
+   //Rcpp::Rcout << "The gradparam is " << gradparam << std::endl;
+   //Rcpp::Rcout << "The beta is " << beta << std::endl;
+   //Rcpp::Rcout << "The betanew is " << betanew << std::endl;
+   //Rcpp::Rcout << "The gradient is " << gradient << std::endl;
+   if(divergecrit<tol){
+     converge = 1;
+     break;
+   }
+   
+   //Check for possible divergence, and shrink gradparam if necessary
+   if(divergecrit>divergecritold){
+     double shrinkperc = 0.5;
+     gradparam = gradparam*shrinkperc;
+     gradparammat = gradparammat.fill(gradparam);
+   }else{
+     //Update Beta
+     beta = betanew;
+     //Update the old divergence criterion for comparison
+     divergecritold = divergecrit; 
+     //Reset Gradparam
+     gradparam = gradparamoriginal;
+   }
+   
+ }
+ 
+ //Compute N
+ arma::mat lambda = 1.0/(1.0+exp(-x*beta.t()));
+ arma::mat probmis(M,1,arma::fill::randu);
+ for(int i=0; i<M; i++){
+   probmis(i) = prod(1.0-lambda.row(i));
+ }
+ double N = accu(1.0/(1-probmis));
+ 
+ 
+ return Rcpp::List::create(Rcpp::Named("N") = N,
+                           Rcpp::Named("betas") = beta,
+                           Rcpp::Named("converge") = converge,
+                           Rcpp::Named("gradparam") = gradparam);
 }
-
 

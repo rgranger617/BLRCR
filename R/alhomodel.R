@@ -1,12 +1,21 @@
-##' A placeholder function using roxygen
+##' Conditional Maximum Likelihood (Alho 1990)
 ##'
-##' This function shows a standard text on the console. In a time-honoured
-##' tradition, it defaults to displaying \emph{hello, world}.
-##' @param txt An optional character variable, defaults to \sQuote{world}
-##' @return Nothing is returned but as a side effect output is printed
+##' This function performs the algorithm in Alho 1990 and returns an estimate for
+##' beta and N.
+##' 
+##' @param Y1 a vector of capture histories.
+##' @param Y2 a vector of capture histories.
+##' @param X a matrix of coefficients.
+##' 
+##' @return List with components "N" and "beta". 
+##' \describe{
+##' \item{"N"}{is a single estimate of the population size.}
+##' \item{"beta"}{is a matrix of beta estimates.}
+##' }
+##' 
 ##' @examples
-##' hello2()
-##' hello2("and goodbye")
+##' NA
+##' 
 ##' @export
 
 alhomodel <- function(Y1,Y2,X){

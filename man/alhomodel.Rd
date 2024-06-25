@@ -2,21 +2,29 @@
 % Please edit documentation in R/alhomodel.R
 \name{alhomodel}
 \alias{alhomodel}
-\title{A placeholder function using roxygen}
+\title{Conditional Maximum Likelihood (Alho 1990)}
 \usage{
 alhomodel(Y1, Y2, X)
 }
 \arguments{
-\item{txt}{An optional character variable, defaults to \sQuote{world}}
+\item{Y1}{a vector of capture histories.}
+
+\item{Y2}{a vector of capture histories.}
+
+\item{X}{a matrix of coefficients.}
 }
 \value{
-Nothing is returned but as a side effect output is printed
+List with components "N" and "beta". 
+\describe{
+\item{"N"}{is a single estimate of the population size.}
+\item{"beta"}{is a matrix of beta estimates.}
+}
 }
 \description{
-This function shows a standard text on the console. In a time-honoured
-tradition, it defaults to displaying \emph{hello, world}.
+This function performs the algorithm in Alho 1990 and returns an estimate for
+beta and N.
 }
 \examples{
-hello2()
-hello2("and goodbye")
+NA
+
 }

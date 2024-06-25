@@ -2,21 +2,47 @@
 % Please edit documentation in R/datasimulators.R
 \name{multdatasimulator}
 \alias{multdatasimulator}
-\title{A placeholder function using roxygen}
+\title{Capture-Recapture Data Simulator with Normal Mixture Distributions}
 \usage{
-multdatasimulator(N, beta, normprobs, normmeans, normsigma, missing = "yes")
+multdatasimulator(N, beta, normprobs, normmeans, normsigma, missing = TRUE)
 }
 \arguments{
-\item{txt}{An optional character variable, defaults to \sQuote{world}}
+\item{N}{the true population size.}
+
+\item{beta}{a matrix of beta coefficients.}
+
+\item{normprobs}{a vector of probabilities. Should sum to 1.}
+
+\item{normmeans}{a vector of means.}
+
+\item{normsigma}{a covariance matrix.}
+
+\item{missing}{logical. if FALSE, then all individuals will be returned, even those with
+capture histories of all 0.}
 }
 \value{
-Nothing is returned but as a side effect output is printed
+df of capture histories and covariates.
 }
 \description{
-This function shows a standard text on the console. In a time-honoured
-tradition, it defaults to displaying \emph{hello, world}.
+This function generates a capture-recapture dataset using normal
+mixture distributions for the covariates.
 }
 \examples{
-hello2()
-hello2("and goodbye")
+#Create the Data
+mybeta = matrix(c(-2,-1,1,
+                  -2,1,-1,
+                  -2,-1,1,
+                  -2,1,-1),nrow=4,byrow=TRUE)
+                  
+mynormprobs=c(0.3,0.4,0.3)
+
+mynormmeans=matrix(c(2,2,
+                     0,0,
+                     -2,-2),ncol=2,byrow=TRUE)
+                     
+mynormsigma=matrix(c(.5, .45, .45,.5,
+                      1,   0,   0, 1,
+                     .5,-.35,-.35,.5),nrow=3,byrow=TRUE)
+mydata = multdatasimulator(2000,mybeta,mynormprobs,mynormmeans,mynormsigma,missing=TRUE)
+
 }

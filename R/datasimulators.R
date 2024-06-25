@@ -1,16 +1,40 @@
 
-##' A placeholder function using roxygen
+##' Capture-Recapture Data Simulator with Normal Mixture Distributions
 ##'
-##' This function shows a standard text on the console. In a time-honoured
-##' tradition, it defaults to displaying \emph{hello, world}.
-##' @param txt An optional character variable, defaults to \sQuote{world}
-##' @return Nothing is returned but as a side effect output is printed
+##' This function generates a capture-recapture dataset using normal
+##' mixture distributions for the covariates.
+##' 
+##' @param N the true population size.
+##' @param beta a matrix of beta coefficients.
+##' @param normprobs a vector of probabilities. Should sum to 1.
+##' @param normmeans a vector of means.
+##' @param normsigma a covariance matrix.
+##' @param missing logical. if FALSE, then all individuals will be returned, even those with
+##' capture histories of all 0.
+##' 
+##' @return df of capture histories and covariates.
+##' 
 ##' @examples
-##' hello2()
-##' hello2("and goodbye")
+##' #Create the Data
+##' mybeta = matrix(c(-2,-1,1,
+##'                   -2,1,-1,
+##'                   -2,-1,1,
+##'                   -2,1,-1),nrow=4,byrow=TRUE)
+##'                   
+##' mynormprobs=c(0.3,0.4,0.3)
+##' 
+##' mynormmeans=matrix(c(2,2,
+##'                      0,0,
+##'                      -2,-2),ncol=2,byrow=TRUE)
+##'                      
+##' mynormsigma=matrix(c(.5, .45, .45,.5,
+##'                       1,   0,   0, 1,
+##'                      .5,-.35,-.35,.5),nrow=3,byrow=TRUE)
+##' mydata = multdatasimulator(2000,mybeta,mynormprobs,mynormmeans,mynormsigma,missing=TRUE)
+##' 
 ##' @export
 multdatasimulator <- function(N,beta,
-                              normprobs,normmeans,normsigma,missing="yes"){
+                              normprobs,normmeans,normsigma,missing=TRUE){
   #safety checks
   
   #parameters
@@ -57,27 +81,41 @@ multdatasimulator <- function(N,beta,
   colnames(mydata) <- gsub("V","",colnames(mydata))
   
   #Remove unobserved
-  if(missing=="yes"){
+  if(missing==TRUE){
     myobserveddata = mydata[rowSums(mydata[,1:J])>0,]
-  }else if (missing=="no"){
+  }else if (missing==FALSE){
     return(mydata)
   }else{
-    stop("Note a valid option for missing.")
+    stop("Not a valid option for missing.")
   }
   
   return(myobserveddata)
 }
 
 
-##' A placeholder function using roxygen
+##' Capture-Recapture Data Simulator
 ##'
-##' This function shows a standard text on the console. In a time-honoured
-##' tradition, it defaults to displaying \emph{hello, world}.
-##' @param txt An optional character variable, defaults to \sQuote{world}
-##' @return Nothing is returned but as a side effect output is printed
+##' This function generates a capture-recapture dataset.
+##' 
+##' @param N the true population size.
+##' @param beta a matrix of beta coefficients.
+##' @param covdists a list of covariate distributions and their parameters,
+##' options include normal, gamma, chisq, and tdist.
+##' @param missing logical. if FALSE, then all individuals will be returned, even those with
+##' capture histories of all 0.
+##' @return df of capture histories and covariates.
 ##' @examples
-##' hello2()
-##' hello2("and goodbye")
+##' N = 500
+##' mybeta = matrix(c(-1,-1,-1,
+##'                   -1,-1,-2,
+##'                   -1,0,1,
+##'                   -1,-1,1),nrow=4,byrow=TRUE)
+##' mycovariates = list(c("gamma",1,1),
+##'                     c("gamma",1,1))
+##'                   
+##' CRsimdata=datasimulator(N,mybeta,mycovariates)
+##' CRsimdata
+##' 
 ##' @export
 datasimulator <- function(N,beta,covdists,missing="yes"){
   #safety checks
@@ -95,21 +133,13 @@ datasimulator <- function(N,beta,covdists,missing="yes"){
   x=rep(1,N)
   for(h in 1:H){
     if(covdists[[h]][1]=="normal"){
-      newx=rnorm(N,mean=covdists[[h]][[2]],sd=covdists[[h]][[3]])
+      newx=rnorm(N,mean=as.numeric(covdists[[h]][[2]]),sd=as.numeric(covdists[[h]][[3]]))
     }else if(covdists[[h]][1]=="gamma"){
       newx=rgamma(N,as.numeric(covdists[[h]][[2]]),as.numeric(covdists[[h]][[3]]))
     }else if(covdists[[h]][1]=="chisq"){
       newx=rchisq(N,df=as.numeric(covdists[[h]][[2]]))
     }else if(covdists[[h]][1]=="tdist"){
       newx=rt(N,df=as.numeric(covdists[[h]][[3]]),ncp=as.numeric(covdists[[h]][[2]]))
-    }else if(covdists[[h]][[1]]=="normalmixture"){
-      nummix=nrow(covdists[[h]][[2]])
-      probs=covdists[[h]][[2]][,1]
-      newx=rep(NA,N)
-      for(i in 1:N){
-        mixc=sample(1:3,1,prob=probs)
-        newx[i]=rnorm(1,mean=covdists[[h]][[2]][mixc,2],sd=covdists[[h]][[2]][mixc,3])
-      }
     }
     x=cbind(x,newx)
   }
@@ -138,12 +168,12 @@ datasimulator <- function(N,beta,covdists,missing="yes"){
   colnames(mydata) <- gsub("V","",colnames(mydata))
   
   #Remove unobserved
-  if(missing=="yes"){
+  if(missing==TRUE){
     myobserveddata = mydata[rowSums(mydata[,1:J])>0,]
-  }else if (missing=="no"){
+  }else if (missing==FALSE){
     return(mydata)
   }else{
-    stop("Note a valid option for missing.")
+    stop("Not a valid option for missing.")
   }
   
   return(myobserveddata)

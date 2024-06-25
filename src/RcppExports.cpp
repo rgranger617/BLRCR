@@ -11,31 +11,79 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// SPBLRCRsolver
-Rcpp::List SPBLRCRsolver(arma::mat y, arma::mat x, arma::vec priorb, arma::mat priorB, arma::vec priorMU0, arma::mat priorlambda0, double priorkappa0, double priornu0, double aalpha, double balpha, int Kstar, int samples);
-RcppExport SEXP _BLRCR_SPBLRCRsolver(SEXP ySEXP, SEXP xSEXP, SEXP priorbSEXP, SEXP priorBSEXP, SEXP priorMU0SEXP, SEXP priorlambda0SEXP, SEXP priorkappa0SEXP, SEXP priornu0SEXP, SEXP aalphaSEXP, SEXP balphaSEXP, SEXP KstarSEXP, SEXP samplesSEXP) {
+// unique_rows
+arma::mat unique_rows(const arma::mat& x);
+RcppExport SEXP _BLRCR_unique_rows(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(unique_rows(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// BLRCRsolver
+Rcpp::List BLRCRsolver(Formula formula, DataFrame df, String covmethod, String coefprior, arma::vec bprior, double Bprior, int Homega, int Kstar, int samples, int burnin);
+RcppExport SEXP _BLRCR_BLRCRsolver(SEXP formulaSEXP, SEXP dfSEXP, SEXP covmethodSEXP, SEXP coefpriorSEXP, SEXP bpriorSEXP, SEXP BpriorSEXP, SEXP HomegaSEXP, SEXP KstarSEXP, SEXP samplesSEXP, SEXP burninSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Formula >::type formula(formulaSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< String >::type covmethod(covmethodSEXP);
+    Rcpp::traits::input_parameter< String >::type coefprior(coefpriorSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type bprior(bpriorSEXP);
+    Rcpp::traits::input_parameter< double >::type Bprior(BpriorSEXP);
+    Rcpp::traits::input_parameter< int >::type Homega(HomegaSEXP);
+    Rcpp::traits::input_parameter< int >::type Kstar(KstarSEXP);
+    Rcpp::traits::input_parameter< int >::type samples(samplesSEXP);
+    Rcpp::traits::input_parameter< int >::type burnin(burninSEXP);
+    rcpp_result_gen = Rcpp::wrap(BLRCRsolver(formula, df, covmethod, coefprior, bprior, Bprior, Homega, Kstar, samples, burnin));
+    return rcpp_result_gen;
+END_RCPP
+}
+// BLRCRsolvermissing
+Rcpp::List BLRCRsolvermissing(Formula formula, DataFrame df, String covmethod, String covsupport, String coefprior, Rcpp::Nullable<Rcpp::NumericMatrix> bprior, double Bprior, double LBprior, double alphabayesbootstrap, Rcpp::Nullable<double> alphaomega, double aomega, double bomega, unsigned int Homega, int samples, int burnin, int thinning);
+RcppExport SEXP _BLRCR_BLRCRsolvermissing(SEXP formulaSEXP, SEXP dfSEXP, SEXP covmethodSEXP, SEXP covsupportSEXP, SEXP coefpriorSEXP, SEXP bpriorSEXP, SEXP BpriorSEXP, SEXP LBpriorSEXP, SEXP alphabayesbootstrapSEXP, SEXP alphaomegaSEXP, SEXP aomegaSEXP, SEXP bomegaSEXP, SEXP HomegaSEXP, SEXP samplesSEXP, SEXP burninSEXP, SEXP thinningSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Formula >::type formula(formulaSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< String >::type covmethod(covmethodSEXP);
+    Rcpp::traits::input_parameter< String >::type covsupport(covsupportSEXP);
+    Rcpp::traits::input_parameter< String >::type coefprior(coefpriorSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericMatrix> >::type bprior(bpriorSEXP);
+    Rcpp::traits::input_parameter< double >::type Bprior(BpriorSEXP);
+    Rcpp::traits::input_parameter< double >::type LBprior(LBpriorSEXP);
+    Rcpp::traits::input_parameter< double >::type alphabayesbootstrap(alphabayesbootstrapSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<double> >::type alphaomega(alphaomegaSEXP);
+    Rcpp::traits::input_parameter< double >::type aomega(aomegaSEXP);
+    Rcpp::traits::input_parameter< double >::type bomega(bomegaSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type Homega(HomegaSEXP);
+    Rcpp::traits::input_parameter< int >::type samples(samplesSEXP);
+    Rcpp::traits::input_parameter< int >::type burnin(burninSEXP);
+    Rcpp::traits::input_parameter< int >::type thinning(thinningSEXP);
+    rcpp_result_gen = Rcpp::wrap(BLRCRsolvermissing(formula, df, covmethod, covsupport, coefprior, bprior, Bprior, LBprior, alphabayesbootstrap, alphaomega, aomega, bomega, Homega, samples, burnin, thinning));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bootstrapRCR
+SEXP bootstrapRCR(arma::mat y, arma::mat x, arma::mat beta);
+RcppExport SEXP _BLRCR_bootstrapRCR(SEXP ySEXP, SEXP xSEXP, SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat >::type y(ySEXP);
     Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type priorb(priorbSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type priorB(priorBSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type priorMU0(priorMU0SEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type priorlambda0(priorlambda0SEXP);
-    Rcpp::traits::input_parameter< double >::type priorkappa0(priorkappa0SEXP);
-    Rcpp::traits::input_parameter< double >::type priornu0(priornu0SEXP);
-    Rcpp::traits::input_parameter< double >::type aalpha(aalphaSEXP);
-    Rcpp::traits::input_parameter< double >::type balpha(balphaSEXP);
-    Rcpp::traits::input_parameter< int >::type Kstar(KstarSEXP);
-    Rcpp::traits::input_parameter< int >::type samples(samplesSEXP);
-    rcpp_result_gen = Rcpp::wrap(SPBLRCRsolver(y, x, priorb, priorB, priorMU0, priorlambda0, priorkappa0, priornu0, aalpha, balpha, Kstar, samples));
+    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(bootstrapRCR(y, x, beta));
     return rcpp_result_gen;
 END_RCPP
 }
 // condBLRCRsolver
-Rcpp::List condBLRCRsolver(arma::mat y, arma::mat x, arma::vec priorb, arma::mat priorB, double gradparam, int prior, double tol, int maxiter);
-RcppExport SEXP _BLRCR_condBLRCRsolver(SEXP ySEXP, SEXP xSEXP, SEXP priorbSEXP, SEXP priorBSEXP, SEXP gradparamSEXP, SEXP priorSEXP, SEXP tolSEXP, SEXP maxiterSEXP) {
+Rcpp::List condBLRCRsolver(arma::mat y, arma::mat x, arma::vec priorb, arma::mat priorB, double gradparam, int prior, double tol, int maxiter, Rcpp::Nullable<Rcpp::NumericMatrix> initbeta);
+RcppExport SEXP _BLRCR_condBLRCRsolver(SEXP ySEXP, SEXP xSEXP, SEXP priorbSEXP, SEXP priorBSEXP, SEXP gradparamSEXP, SEXP priorSEXP, SEXP tolSEXP, SEXP maxiterSEXP, SEXP initbetaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -47,14 +95,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type prior(priorSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
     Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
-    rcpp_result_gen = Rcpp::wrap(condBLRCRsolver(y, x, priorb, priorB, gradparam, prior, tol, maxiter));
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericMatrix> >::type initbeta(initbetaSEXP);
+    rcpp_result_gen = Rcpp::wrap(condBLRCRsolver(y, x, priorb, priorB, gradparam, prior, tol, maxiter, initbeta));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BLRCR_SPBLRCRsolver", (DL_FUNC) &_BLRCR_SPBLRCRsolver, 12},
-    {"_BLRCR_condBLRCRsolver", (DL_FUNC) &_BLRCR_condBLRCRsolver, 8},
+    {"_BLRCR_unique_rows", (DL_FUNC) &_BLRCR_unique_rows, 1},
+    {"_BLRCR_BLRCRsolver", (DL_FUNC) &_BLRCR_BLRCRsolver, 10},
+    {"_BLRCR_BLRCRsolvermissing", (DL_FUNC) &_BLRCR_BLRCRsolvermissing, 16},
+    {"_BLRCR_bootstrapRCR", (DL_FUNC) &_BLRCR_bootstrapRCR, 3},
+    {"_BLRCR_condBLRCRsolver", (DL_FUNC) &_BLRCR_condBLRCRsolver, 9},
     {NULL, NULL, 0}
 };
 
