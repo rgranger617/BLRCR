@@ -10,6 +10,13 @@ A package for using the BLRCR model.
 
 ## Installation
 
+### R Installation
+
+Begin with installing [R and
+RStudio](https://posit.co/download/rstudio-desktop/).
+
+### Install Package “BLRCR”
+
 You can install this beta version of BLRCR from
 [GitHub](https://github.com/) with:
 

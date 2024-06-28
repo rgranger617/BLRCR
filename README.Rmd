@@ -33,7 +33,7 @@ devtools::install_github("rgranger617/BLRCR")
 
 Check out the BLRCRsolvermissing() function:
 
-```{r}
+```{r,eval=FALSE}
 library(BLRCR)
 
 #Create the Data

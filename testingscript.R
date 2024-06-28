@@ -21,19 +21,21 @@ myformula = cbind(exh,aba,osce,hrw)~female+agestandard+I(agestandard^2)+I(agesta
 
 start.time=Sys.time()
 #set.seed(20230323)
-Homegaval=10
+Homegaval=5
 bprior=matrix(rep(0,4*(ncol(model.matrix(myformula,kosovodata))+Homegaval-1)),nrow=4)
 modelresults=BLRCRsolvermissing(myformula,df=kosovodata,Homega=Homegaval,
                                 covmethod="bootstrap",covsupport="all",
-                                coefprior="normalhier",
-                                Bprior=1,LBprior=1,
+                                coefprior="normalhiervaronly",
+                                Bprior=10,LBprior=10,
                                 bprior=bprior,
-                                samples = 100,burnin=10,thinning = 10,
+                                samples = 200,burnin=10,thinning = 10,
                                 alphabayesbootstrap = .01,
                                 aomega=.25,bomega=.25)
 end.time <- Sys.time()
 end.time-start.time
 
+
+modelresults$ymatrix
 
 modelresults$priorBdiag[100,,]
 modelresults$Beta
