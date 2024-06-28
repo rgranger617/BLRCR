@@ -33,6 +33,8 @@ Check out the BLRCRsolvermissing() function:
 library(BLRCR)
 
 #Create the Data
+myN = 2000
+
 mybeta = matrix(c(-2,-1,1,
                   -2,1,-1,
                   -2,-1,1,
@@ -48,7 +50,7 @@ mynormsigma=matrix(c(.5,.45,.45,.5,
                       1,0,0,1,
                       .5,-.35,-.35,.5),nrow=3,byrow=TRUE)
 
-myCRdata = multdatasimulator(2000,mybeta,mynormprobs,mynormmeans,mynormsigma,
+myCRdata = multdatasimulator(myN,mybeta,mynormprobs,mynormmeans,mynormsigma,
                            missing=TRUE)
                            
 #Run the Algorithm
@@ -58,4 +60,6 @@ CRresults=BLRCRsolvermissing(myformula,df=myCRdata,Homega=1,
                              Bprior=1,LBprior=1,
                              covsupport="unique",
                              samples = 1000,burnin=10,thinning = 10)
+
+quantile(CRresults$N,c(.025,.5,.975))
 ```
